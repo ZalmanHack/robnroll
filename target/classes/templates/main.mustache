@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>ROB & ROLL</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div>
+    <form action="/logout" method="post">
+        <input type="submit" value="Sign Out"/>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+    </form>
+</div>
+
+<div>
+    <form method="post" action="/main">
+        <input type="text" name="name" placeholder="Введите название бригады"/>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <form method="post" action="/brigade_filter">
+        <input type="text" name="name" placeholder="Поиск бригады">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+        <button type="submit">Найти</button>
+    </form>
+</div>
+
+<div>Список бригад</div>
+{{#brigades}}
+    <div>
+        <i>{{id}}</i>
+        <span>{{name}}</span>
+    </div>
+{{/brigades}}
+</body>
+</html>
