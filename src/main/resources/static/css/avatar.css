@@ -1,0 +1,78 @@
+/* http://caniuse.com/#search=variables */
+:root {
+    --avatar-size: 2rem;
+}
+
+.navbar {
+    --avatar-size: 2rem;
+}
+
+.avatar-circle .avatar-circle-text {
+    background-color: #ccc;
+    border-radius: 50%;
+    height: var(--avatar-size);
+    position: relative;
+    text-align: center;
+    width: var(--avatar-size);
+}
+
+.avatar-circle-text {
+
+}
+
+.primary {
+    background-color: rgba(178, 230, 250, 0.5);
+    color: #00acf0;
+}
+
+.info {
+    background-color: rgba(187, 235, 240, 0.5);
+    color: #1ebccd;
+}
+
+.success {
+    background-color: rgba(188, 231, 199, 0.5);
+    color: #22af47;
+}
+
+.danger {
+    background-color: rgba(253, 197, 195, 0.5);
+    color: #f83f37;
+}
+
+.warning {
+    background-color: rgba(255, 236, 194, 0.5);
+    color: #ffbf36;
+}
+
+.teal {
+    background-color: rgba(178, 225, 218, 0.5);
+    color: #009b84;;
+}
+
+.gold {
+    background-color: rgba(236, 224, 197, 0.5);
+    color: #c1993f;;
+}
+
+.pumpkin {
+    background-color: rgba(255, 207, 190, 0.5);
+    color: #ff6028;;
+}
+
+.indigo  {
+    background-color: rgba(196, 204, 231, 0.5);
+    color: #3a55b1;
+}
+
+.light {
+    background-color: rgba(173, 179, 182, 0.5);
+    color: #6f7a7f;
+}
+
+.initials {
+    font-size: calc(var(--avatar-size) * 0.5000); /* 50% of parent */
+    line-height: 1;
+    position: relative;
+    top: calc(var(--avatar-size) * 0.2500); /* 25% of parent */
+}

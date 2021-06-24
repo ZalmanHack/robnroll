@@ -3,6 +3,7 @@ package com.zalman.robnroll.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
@@ -12,21 +13,12 @@ public class Brigade {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotBlank(message = "Данное поле не должно быть пустым")
     private String name;
-
-//    @OneToMany(mappedBy = "brigade", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private Set<Person> persons;
+    private String description;
 
     public Brigade() {
     }
-
-//    public Set<Person> getPersons() {
-//        return persons;
-//    }
-//
-//    public void setPersons(Set<Person> persons) {
-//        this.persons = persons;
-//    }
 
     public Brigade(String name) {
         this.name = name;
@@ -46,5 +38,13 @@ public class Brigade {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

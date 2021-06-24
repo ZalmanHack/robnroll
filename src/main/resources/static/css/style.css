@@ -1,0 +1,86 @@
+/* http://caniuse.com/#search=variables */
+:root {
+    --avatar-size: 16rem;
+    /* change this value anything, e.g., 100px, 10rem, etc. */
+}
+
+.navbar-link {
+    text-decoration: none;
+}
+
+.avatar-circle {
+    background-color: #ccc;
+    border-radius: 50%;
+    height: var(--avatar-size);
+    position: relative;
+    text-align: center;
+    width: var(--avatar-size);
+}
+
+.s-navbar {
+    --avatar-size: 2.3125rem;
+    --text-size: 1rem;
+    --text-top: 0.45rem;
+}
+
+.s-list-item {
+    --avatar-size: 3rem;
+    --text-size: 1.5rem;
+    --text-top: .4rem;
+}
+
+.primary {
+    background-color: rgba(178, 230, 250, 0.5);
+    color: #00acf0;
+}
+
+.info {
+    background-color: rgba(187, 235, 240, 0.5);
+    color: #1ebccd;
+}
+
+.success {
+    background-color: rgba(188, 231, 199, 0.5);
+    color: #22af47;
+}
+
+.danger {
+    background-color: rgba(253, 197, 195, 0.5);
+    color: #f83f37;
+}
+
+.warning {
+    background-color: rgba(255, 236, 194, 0.5);
+    color: #ffbf36;
+}
+
+.teal {
+    background-color: rgba(178, 225, 218, 0.5);
+    color: #009b84;;
+}
+
+.gold {
+    background-color: rgba(236, 224, 197, 0.5);
+    color: #c1993f;;
+}
+
+.pumpkin {
+    background-color: rgba(255, 207, 190, 0.5);
+    color: #ff6028;;
+}
+
+.indigo  {
+    background-color: rgba(196, 204, 231, 0.5);
+    color: #3a55b1;
+}
+
+.light {
+    background-color: rgba(173, 179, 182, 0.5);
+    color: #6f7a7f;
+}
+
+.initials {
+    position: relative;
+    font-size: var(--text-size);
+    top: var(--text-top);
+}
