@@ -2,6 +2,10 @@
     --avatar-size: 16rem;
 }
 
+body {
+    padding-top: 3.5rem;
+}
+
 img {
     width: auto;
     height: auto;

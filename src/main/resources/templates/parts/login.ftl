@@ -36,9 +36,6 @@
         </div>
 
         <#if isRegistration>
-
-
-
             <div class="mb-3">
                 <label for="inputFirst_name" class="form-label">Имя</label>
                 <input name="first_name"

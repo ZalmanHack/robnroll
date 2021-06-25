@@ -2,7 +2,8 @@
 <#import "parts/profile.ftl" as profile>
 
 <@common.page>
-    <@profile.page person false/>
+    <@profile.page "/person/${person.id}/save" person categories activeCategory true/>
+
 
     <form action="/person/${person.id}/save" method="post" enctype="multipart/form-data">
         <input type="text" value="${person.username}" name="username">
@@ -15,7 +16,7 @@
         </#list>
 
         <div>
-            <select size="1" name="brigadeId">
+            <select size="1" name="brigade">
                 <option selected value="">Выберите бригаду</option>
                 <#list brigades as brigade>
                     <option <#if brigade == person.brigade!''>selected</#if> value="${brigade.id}">${brigade.name}</option>

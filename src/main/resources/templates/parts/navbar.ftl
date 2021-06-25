@@ -1,7 +1,7 @@
 <#include "security.ftl">
 <#import "avatar.ftl" as avatar>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/">Rob & Roll</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -16,7 +16,7 @@
                         <a class="nav-link" href="/">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile">Профиль</a>
+                        <a class="nav-link" href="/person/${id}">Профиль</a>
                     </li>
                     <#if isAdmin>
 <#--                        <li><hr class="me-5"></li>-->
@@ -41,6 +41,9 @@
 
             <#if know>
                 <a href="/logout" class="btn btn-outline-danger ms-3">Выход</a>
+            <#else>
+                <a href="/login" class="btn btn-primary ms-3">Вход</a>
+                <a href="/registration" class="btn btn-outline-primary ms-3">Регистрация</a>
             </#if>
         </div>
     </div>

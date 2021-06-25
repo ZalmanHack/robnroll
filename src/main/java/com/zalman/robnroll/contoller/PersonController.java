@@ -1,6 +1,7 @@
 package com.zalman.robnroll.contoller;
 
 import com.fasterxml.jackson.databind.util.ArrayIterator;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import com.zalman.robnroll.domain.Brigade;
 import com.zalman.robnroll.domain.Person;
 import com.zalman.robnroll.domain.Role;
@@ -12,9 +13,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Array;
@@ -51,20 +54,49 @@ public class PersonController {
         return "personList";
     }
 
+    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @GetMapping("{person}")
-    public String personEdit(
-            @PathVariable Person person, Model model) {
-        return "comingSoon";
+    public String personShow (
+            @AuthenticationPrincipal Person auth_person,
+            @PathVariable Person person,
+            @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
+            Model model) {
+        model.addAttribute("person", auth_person);
+        model.addAttribute("roles", Role.values());
+        model.addAttribute("brigades", brigadeRepo.findAll());
+
+        Iterable<Person> persons;
+        if(auth_person.getBrigade() != null) {
+            persons = personRepo.findByBrigadeAndEmailLike(auth_person.getBrigade(), '%' + filter_name + '%');
+            model.addAttribute("persons", persons);
+        }
+
+        model.addAttribute("activeCategory", "Бригада");
+        model.addAttribute("categories", new String[] {"Бригада"});
+        model.addAttribute("filter_name", filter_name);
+        return "person";
     }
 
     @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @GetMapping("{person}/edit")
     public String personEdit(
             @AuthenticationPrincipal Person auth_person,
-            @PathVariable Person person, Model model) {
-        model.addAttribute("person", person);
+            @PathVariable Person person,
+            @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
+            Model model) {
+        model.addAttribute("person", auth_person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
+
+        Iterable<Person> persons;
+        if(auth_person.getBrigade() != null) {
+            persons = personRepo.findByBrigadeAndEmailLike(auth_person.getBrigade(), '%' + filter_name + '%');
+            model.addAttribute("persons", persons);
+        }
+
+        model.addAttribute("activeCategory", "Бригада");
+        model.addAttribute("categories", new String[] {"Бригада"});
+        model.addAttribute("filter_name", filter_name);
         return "personEdit";
     }
 
@@ -72,31 +104,49 @@ public class PersonController {
     @PostMapping("{person}/save")
     public String personSave(
             @AuthenticationPrincipal Person auth_person,
-            @RequestParam(name = "username") String username,
-            @RequestParam(name = "email") String email,
-            @RequestParam(name = "brigadeId", required = false) Brigade brigade,
-            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
+//            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
             @RequestParam Map<String, String> form,
-            @PathVariable Person person) throws IOException {
+            @Valid Person person,
+            BindingResult bindingResult,
+            Model model) throws IOException {
 
-        person.setUsername(username);
-        person.setEmail(email);
+        model.addAttribute("person", person);
+        model.addAttribute("activeCategory", "Бригада");
+        model.addAttribute("categories", new String[] {"Бригада"});
 
-        if (profile_pic != null &&
-                profile_pic.getOriginalFilename() != null &&
-                !profile_pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(upload_path);
-            if(!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
-            // загружаем файл
-            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
-            person.setProfile_pic(resultFileName);
+        if(bindingResult.hasErrors()) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errors);
+            return "personEdit";
         }
 
+        if(person.getPassword() != null && !person.getPassword().equals(person.getPassword_2())) {
+            model.addAttribute("passwordError", "Пароли не равны!");
+            return "personEdit";
+        }
+
+        if(person.getPassword_2().isEmpty()) {
+            model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
+            return "personEdit";
+        }
+
+        // работа с авой
+//        if (profile_pic != null &&
+//                profile_pic.getOriginalFilename() != null &&
+//                !profile_pic.getOriginalFilename().isEmpty()) {
+//            File uploadDir = new File(upload_path);
+//            if(!uploadDir.exists()) {
+//                uploadDir.mkdir();
+//            }
+//
+//            String uuidFile = UUID.randomUUID().toString();
+//            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
+//            // загружаем файл
+//            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
+//            person.setProfile_pic(resultFileName);
+//        }
+
+        // Работа с ролями
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
                 .collect(Collectors.toSet());
@@ -107,9 +157,8 @@ public class PersonController {
                 person.getRoles().add(Role.valueOf(key));
             }
         }
-        person.setBrigade(brigade);
         personRepo.save(person);
-        return "redirect:/person";
+        return "person";
     }
 
     @PostMapping("{person}/delete")

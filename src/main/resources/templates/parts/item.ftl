@@ -1,6 +1,6 @@
 <#import "avatar.ftl" as avatar>
 
-<#macro personItem person>
+<#macro personItem person edit>
     <div class="d-flex flex-row me-auto">
         <a class="navbar-link d-flex flex-row me-auto" href="person/${person.id}">
             <div class="d-flex align-items-center">
@@ -11,9 +11,11 @@
                 <p class="text-dark card-text">${person.email}</p>
             </div>
         </a>
-        <div class="">
-            <a class="navbar-link text-secondary" href="person/${person.id}/edit">Редактировать</a>
-        </div>
+        <#if edit == true>
+            <div class="">
+                <a class="navbar-link text-secondary" href="person/${person.id}/edit">Редактировать</a>
+            </div>
+        </#if>
     </div>
 </#macro>
 

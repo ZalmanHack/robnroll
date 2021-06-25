@@ -9,6 +9,7 @@ know = Session.SPRING_SECURITY_CONTEXT??
     initials = person.getInitials()
     profile_pic = person.getProfile_pic()
     isAdmin = person.isAdmin()
+    id = person.getId()
     >
 <#else>
     <#assign
@@ -16,5 +17,6 @@ know = Session.SPRING_SECURITY_CONTEXT??
     first_name = "Гость"
     initials = "ГС"
     isAdmin = false
+    id = 0
     >
 </#if>
