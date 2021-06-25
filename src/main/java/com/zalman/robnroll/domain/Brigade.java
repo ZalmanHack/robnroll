@@ -47,4 +47,8 @@ public class Brigade {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getInitials() {
+        return Character.toString(name.charAt(0)).toUpperCase();
+    }
 }

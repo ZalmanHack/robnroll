@@ -1,4 +1,5 @@
 <#include "security.ftl">
+<#import "avatar.ftl" as avatar>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -34,9 +35,7 @@
                 <div class="navbar-text">${first_name}</div>
             </a>
             <a class="navbar-link d-inline-block" href="/profile">
-                <div class="avatar-circle s-navbar primary">
-                    <span class="initials">${initials}</span>
-                </div>
+                <@avatar.page "${profile_pic}" "${initials}" "primary" "s-navbar"/>
             </a>
 
 

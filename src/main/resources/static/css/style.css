@@ -1,7 +1,11 @@
-/* http://caniuse.com/#search=variables */
 :root {
     --avatar-size: 16rem;
-    /* change this value anything, e.g., 100px, 10rem, etc. */
+}
+
+img {
+    width: auto;
+    height: auto;
+    object-fit: cover;
 }
 
 .navbar-link {
@@ -21,6 +25,12 @@
     --avatar-size: 2.3125rem;
     --text-size: 1rem;
     --text-top: 0.45rem;
+}
+
+.s-profile {
+    --avatar-size: 12.5rem;
+    --text-size: 5rem;
+    --text-top: 2.2rem;
 }
 
 .s-list-item {

@@ -1,11 +1,8 @@
 <#import "parts/common.ftl" as common>
+<#import "parts/profile.ftl" as profile>
 
 <@common.page>
-    <div>
-        <#if person.profile_pic??>
-            <img src="/img/${person.profile_pic}" width="200">
-        </#if>
-    </div>
+    <@profile.page person false/>
 
     <form action="/person/${person.id}/save" method="post" enctype="multipart/form-data">
         <input type="text" value="${person.username}" name="username">

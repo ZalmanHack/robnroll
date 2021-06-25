@@ -151,7 +151,7 @@ public class Person implements UserDetails {
     }
 
     public String getInitials() {
-        return String.valueOf(Character.toString(last_name.charAt(0)) + Character.toString(first_name.charAt(0)));
+        return String.valueOf(Character.toString(last_name.charAt(0)) + Character.toString(first_name.charAt(0))).toUpperCase();
     }
 
     public String getFull_name() {

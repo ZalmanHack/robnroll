@@ -11,6 +11,6 @@ public interface PersonRepo extends JpaRepository<Person, Long> {
     Iterable<Person> findByBrigadeIsNull();
     void removeById(Long id);
     Person findByEmail(String email);
-
     Person findByActivationCode(String code);
+    Iterable<Person> findByBrigadeAndEmailLike(Brigade brigade, String email);
 }

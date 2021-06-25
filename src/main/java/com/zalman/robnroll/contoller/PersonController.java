@@ -9,6 +9,7 @@ import com.zalman.robnroll.repos.PersonRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-@PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/person")
 public class PersonController {
     @Autowired
@@ -33,16 +33,17 @@ public class PersonController {
     @Value("${upload.path}")
     private String upload_path;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
-    public String personList(@RequestParam(name = "activeCategory", required = false, defaultValue = "Все") String activeCategory,
+    public String personList(@RequestParam(name = "activeCategory", required = false, defaultValue = "Все пользователи") String activeCategory,
                              Model model) {
         Iterable<Person> persons;
-        String[] categories = new String[] {"Все", "В бригаде", "Без бригады"};
+        String[] categories = new String[] {"Все пользователи", "В бригаде", "Без бригады"};
         switch (activeCategory) {
             case "В бригаде": persons = personRepo.findByBrigadeNotNull(); break;
             case "Без бригады": persons = personRepo.findByBrigadeIsNull(); break;
             default: persons = personRepo.findAll();
-                activeCategory = "Все";
+                activeCategory = "Все пользователи";
         }
         model.addAttribute("activeCategory", activeCategory);
         model.addAttribute("categories", categories);
@@ -50,16 +51,27 @@ public class PersonController {
         return "personList";
     }
 
+    @GetMapping("{person}")
+    public String personEdit(
+            @PathVariable Person person, Model model) {
+        return "comingSoon";
+    }
+
+    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @GetMapping("{person}/edit")
-    public String personEdit(@PathVariable Person person, Model model) {
+    public String personEdit(
+            @AuthenticationPrincipal Person auth_person,
+            @PathVariable Person person, Model model) {
         model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
         return "personEdit";
     }
 
+    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @PostMapping("{person}/save")
     public String personSave(
+            @AuthenticationPrincipal Person auth_person,
             @RequestParam(name = "username") String username,
             @RequestParam(name = "email") String email,
             @RequestParam(name = "brigadeId", required = false) Brigade brigade,
