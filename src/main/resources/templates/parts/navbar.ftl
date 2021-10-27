@@ -34,7 +34,7 @@
             <a class="navbar-link pe-2 d-inline-block" href="/profile">
                 <div class="navbar-text">${first_name}</div>
             </a>
-            <a class="navbar-link d-inline-block" href="/profile">
+            <a class="navbar-link d-inline-block" href="/person/${id}">
                 <@avatar.page "${profile_pic}" "${initials}" "primary" "s-navbar"/>
             </a>
 

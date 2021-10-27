@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Main-Class: com.zalman.robnroll.ServingWebContentApplication
+Class-Path: HikariCP-3.4.5.jar freemarker-2.3.31.jar spring-security-con
+ fig-5.4.5.jar spring-boot-starter-web-2.4.3.jar json-smart-2.3.jar spri
+ ng-boot-starter-mail-2.4.3.jar fetch-blob-3.0.0-rc.0.jar json-path-2.4.
+ 0.jar jakarta.el-3.0.3.jar spring-boot-starter-data-jpa-2.4.3.jar sprin
+ g-boot-autoconfigure-2.4.3.jar jakarta.xml.bind-api-2.3.3.jar accessors
+ -smart-1.2.jar data-uri-to-buffer-3.0.1.jar asm-5.0.4.jar aspectjweaver
+ -1.9.6.jar spring-expression-5.3.4.jar jandex-2.2.3.Final.jar spring-bo
+ ot-starter-aop-2.4.3.jar spring-beans-5.3.4.jar spring-boot-starter-sec
+ urity-2.4.3.jar spring-jdbc-5.3.4.jar jackson-datatype-jsr310-2.11.4.ja
+ r logback-core-1.2.3.jar spring-boot-starter-json-2.4.3.jar tomcat-embe
+ d-core-9.0.43.jar byte-buddy-1.10.20.jar jakarta.transaction-api-1.3.3.
+ jar log4j-to-slf4j-2.13.3.jar bootstrap-5.0.0-beta3.jar jackson-core-2.
+ 11.4.jar ansi-styles-4.3.0.jar spring-boot-2.4.3.jar validation-api-2.0
+ .1.Final.jar jackson-annotations-2.11.4.jar spring-security-core-5.4.5.
+ jar logback-classic-1.2.3.jar slf4j-api-1.7.30.jar spring-context-5.3.4
+ .jar spring-orm-5.3.4.jar spring-boot-starter-tomcat-2.4.3.jar jakarta.
+ annotation-api-1.3.5.jar chalk-4.1.1.jar spring-tx-5.3.4.jar jaxb-runti
+ me-2.3.3.jar jackson-databind-2.11.4.jar hibernate-commons-annotations-
+ 5.1.2.Final.jar bootstrap-vue-2.21.2.jar spring-jcl-5.3.4.jar jakarta.a
+ ctivation-1.2.2.jar color-convert-2.0.1.jar jul-to-slf4j-1.7.30.jar che
+ cker-qual-3.5.0.jar spring-webmvc-5.3.4.jar tomcat-embed-websocket-9.0.
+ 43.jar log4j-api-2.13.3.jar spring-boot-starter-logging-2.4.3.jar sprin
+ g-boot-starter-jdbc-2.4.3.jar spring-data-jpa-2.4.5.jar spring-web-5.3.
+ 4.jar spring-aspects-5.3.4.jar consola-2.15.0.jar hibernate-core-5.4.28
+ .Final.jar spring-aop-5.3.4.jar dom4j-2.1.3.jar spring-security-web-5.4
+ .5.jar jackson-module-parameter-names-2.11.4.jar has-flag-4.0.0.jar jak
+ arta.mail-1.6.5.jar color-name-1.1.4.jar popper.js-1.16.1-lts.jar jacks
+ on-datatype-jdk8-2.11.4.jar nuxt__opencollective-0.3.2.jar postgresql-4
+ 2.2.18.jar spring-boot-devtools-2.4.3.jar jakarta.persistence-api-2.2.3
+ .jar spring-context-support-5.3.4.jar spring-boot-starter-2.4.3.jar ist
+ ack-commons-runtime-3.0.11.jar jboss-logging-3.4.1.Final.jar classmate-
+ 1.5.1.jar node-fetch-3.0.0-beta.9.jar txw2-2.3.3.jar vue-functional-dat
+ a-merge-3.1.0.jar jakarta.activation-api-1.2.2.jar spring-data-commons-
+ 2.4.5.jar portal-vue-2.1.7.jar spring-boot-starter-freemarker-2.4.3.jar
+  snakeyaml-1.27.jar supports-color-7.2.0.jar spring-core-5.3.4.jar antl
+ r-2.7.7.jar hibernate-validator-6.0.13.Final.jar javassist-3.27.0-GA.ja
+ r
+

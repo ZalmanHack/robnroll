@@ -63,6 +63,9 @@ public class Person implements UserDetails {
     }
 
     public String getProfile_pic() {
+        if(profile_pic == null) {
+            return "";
+        }
         return profile_pic;
     }
 

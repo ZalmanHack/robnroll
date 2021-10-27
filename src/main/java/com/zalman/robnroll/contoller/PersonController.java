@@ -54,20 +54,20 @@ public class PersonController {
         return "personList";
     }
 
-    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
+    //@PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @GetMapping("{person}")
     public String personShow (
             @AuthenticationPrincipal Person auth_person,
             @PathVariable Person person,
             @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
             Model model) {
-        model.addAttribute("person", auth_person);
+        model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
 
         Iterable<Person> persons;
-        if(auth_person.getBrigade() != null) {
-            persons = personRepo.findByBrigadeAndEmailLike(auth_person.getBrigade(), '%' + filter_name + '%');
+        if(person.getBrigade() != null) {
+            persons = personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + filter_name + '%');
             model.addAttribute("persons", persons);
         }
 
@@ -100,53 +100,33 @@ public class PersonController {
         return "personEdit";
     }
 
-    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @PostMapping("{person}/save")
     public String personSave(
-            @AuthenticationPrincipal Person auth_person,
-//            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
+            @RequestParam(name = "username") String username,
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "brigadeId", required = false) Brigade brigade,
+            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
             @RequestParam Map<String, String> form,
-            @Valid Person person,
-            BindingResult bindingResult,
-            Model model) throws IOException {
+            @PathVariable Person person) throws IOException {
 
-        model.addAttribute("person", person);
-        model.addAttribute("activeCategory", "Бригада");
-        model.addAttribute("categories", new String[] {"Бригада"});
+        person.setUsername(username);
+        person.setEmail(email);
 
-        if(bindingResult.hasErrors()) {
-            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
-            model.mergeAttributes(errors);
-            return "personEdit";
+        if (profile_pic != null &&
+                profile_pic.getOriginalFilename() != null &&
+                !profile_pic.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(upload_path);
+            if(!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+
+            String uuidFile = UUID.randomUUID().toString();
+            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
+            // загружаем файл
+            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
+            person.setProfile_pic(resultFileName);
         }
 
-        if(person.getPassword() != null && !person.getPassword().equals(person.getPassword_2())) {
-            model.addAttribute("passwordError", "Пароли не равны!");
-            return "personEdit";
-        }
-
-        if(person.getPassword_2().isEmpty()) {
-            model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
-            return "personEdit";
-        }
-
-        // работа с авой
-//        if (profile_pic != null &&
-//                profile_pic.getOriginalFilename() != null &&
-//                !profile_pic.getOriginalFilename().isEmpty()) {
-//            File uploadDir = new File(upload_path);
-//            if(!uploadDir.exists()) {
-//                uploadDir.mkdir();
-//            }
-//
-//            String uuidFile = UUID.randomUUID().toString();
-//            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
-//            // загружаем файл
-//            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
-//            person.setProfile_pic(resultFileName);
-//        }
-
-        // Работа с ролями
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
                 .collect(Collectors.toSet());
@@ -157,9 +137,71 @@ public class PersonController {
                 person.getRoles().add(Role.valueOf(key));
             }
         }
+        person.setBrigade(brigade);
         personRepo.save(person);
-        return "person";
+        return "redirect:/person";
     }
+
+//    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
+//    @PostMapping("{person}/save")
+//    public String personSave(
+//            @AuthenticationPrincipal Person auth_person,
+////            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
+//            @RequestParam Map<String, String> form,
+//            @Valid Person person,
+//            BindingResult bindingResult,
+//            Model model) throws IOException {
+//
+//        model.addAttribute("person", person);
+//        model.addAttribute("activeCategory", "Бригада");
+//        model.addAttribute("categories", new String[] {"Бригада"});
+//
+//        if(bindingResult.hasErrors()) {
+//            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+//            model.mergeAttributes(errors);
+//            return "personEdit";
+//        }
+//
+//        if(person.getPassword() != null && !person.getPassword().equals(person.getPassword_2())) {
+//            model.addAttribute("passwordError", "Пароли не равны!");
+//            return "personEdit";
+//        }
+//
+//        if(person.getPassword_2().isEmpty()) {
+//            model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
+//            return "personEdit";
+//        }
+//
+//        // работа с авой
+////        if (profile_pic != null &&
+////                profile_pic.getOriginalFilename() != null &&
+////                !profile_pic.getOriginalFilename().isEmpty()) {
+////            File uploadDir = new File(upload_path);
+////            if(!uploadDir.exists()) {
+////                uploadDir.mkdir();
+////            }
+////
+////            String uuidFile = UUID.randomUUID().toString();
+////            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
+////            // загружаем файл
+////            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
+////            person.setProfile_pic(resultFileName);
+////        }
+//
+//        // Работа с ролями
+//        Set<String> roles = Arrays.stream(Role.values())
+//                .map(Role::name)
+//                .collect(Collectors.toSet());
+//
+//        person.getRoles().clear();
+//        for (String key : form.keySet()) {
+//            if (roles.contains(key)) {
+//                person.getRoles().add(Role.valueOf(key));
+//            }
+//        }
+//        personRepo.save(person);
+//        return "person";
+//    }
 
     @PostMapping("{person}/delete")
     public String deletePerson(@PathVariable Person person) {

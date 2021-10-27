@@ -2,5 +2,5 @@
 <#import "parts/profile.ftl" as profile>
 
 <@common.page>
-    <@profile.page person categories activeCategory false/>
+    <@profile.page "/person/${person.id}" person categories activeCategory false/>
 </@common.page>

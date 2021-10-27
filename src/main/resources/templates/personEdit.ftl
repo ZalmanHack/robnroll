@@ -2,7 +2,7 @@
 <#import "parts/profile.ftl" as profile>
 
 <@common.page>
-    <@profile.page "/person/${person.id}/save" person categories activeCategory true/>
+<#--    <@profile.page "/person/${person.id}/save" person categories activeCategory true/>-->
 
 
     <form action="/person/${person.id}/save" method="post" enctype="multipart/form-data">
