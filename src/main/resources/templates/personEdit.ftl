@@ -2,9 +2,12 @@
 <#import "parts/profile.ftl" as profile>
 
 <@common.page>
-<#--    <@profile.page "/person/${person.id}/save" person categories activeCategory true/>-->
+        <@profile.page "/person/${person.id}/save" person categories activeCategory true filter_name/>
 
 
+
+
+<!--
     <form action="/person/${person.id}/save" method="post" enctype="multipart/form-data">
         <input type="text" value="${person.username}" name="username">
         <input type="email" value="${person.email}" name="email">
@@ -34,4 +37,5 @@
         <input type="hidden" value="${_csrf.token}" name="_csrf">
         <button type="submit">Удалить</button>
     </form>
+    -->
 </@common.page>

@@ -1,5 +1,5 @@
 <#import "parts/common.ftl" as common>
-<#import "parts/login.ftl" as login>
+<#import "parts/authForm.ftl" as login>
 <#import "parts/cardHeader.ftl" as cardHeader>
 <#import "parts/item.ftl" as item>
 
@@ -60,7 +60,7 @@
                         <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>
                     </#if>
                 <#else>
-                    Нет сообщений
+                    Нет бригад
                 </#list>
             <#elseif persons??>
                 <#list persons as person>
@@ -68,7 +68,10 @@
                     <#if !person?is_last>
                         <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>
                     </#if>
+                <#else>
+                    Нет пользователей
                 </#list>
+
             </#if>
         </div>
     </div>

@@ -44,12 +44,12 @@ public class BrigadeController {
         List<String> categories = new ArrayList<>();
         categories.add("Все бригады");
 
-        if (activeCategory.isEmpty() || activeCategory.equals("Все бригады")) {
+        if (activeCategory.isEmpty() || activeCategory.equals("Все бригады") || brigadeRepo.findByName(activeCategory) == null) {
             Iterable<Brigade> brigades = brigadeRepo.findByNameLike('%' + filter_name + '%');
             activeCategory = "Все бригады";
             model.addAttribute("brigades", brigades);
         } else if (brigadeRepo.findByName(activeCategory) != null) {
-            categories.add(activeCategory); // добавляем потому что этой категории в списке изначально не было, ее сгенерировала станица клиента
+            categories.add(activeCategory); // добавляем потому что этой категории в списке изначально не было, ее сгенерировала страница клиента
             Iterable<Person> persons = personRepo.findByBrigadeAndEmailLike(brigadeRepo.findByName(activeCategory), '%' + filter_name + '%');
             model.addAttribute("persons", persons);
         }

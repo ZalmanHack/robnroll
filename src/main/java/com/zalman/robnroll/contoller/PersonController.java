@@ -65,12 +65,11 @@ public class PersonController {
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
 
-        Iterable<Person> persons;
+        Iterable<Person> persons = new ArrayList<>();
         if(person.getBrigade() != null) {
             persons = personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + filter_name + '%');
-            model.addAttribute("persons", persons);
         }
-
+        model.addAttribute("persons", persons);
         model.addAttribute("activeCategory", "Бригада");
         model.addAttribute("categories", new String[] {"Бригада"});
         model.addAttribute("filter_name", filter_name);
@@ -84,13 +83,13 @@ public class PersonController {
             @PathVariable Person person,
             @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
             Model model) {
-        model.addAttribute("person", auth_person);
+        model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
 
         Iterable<Person> persons;
         if(auth_person.getBrigade() != null) {
-            persons = personRepo.findByBrigadeAndEmailLike(auth_person.getBrigade(), '%' + filter_name + '%');
+            persons = personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + filter_name + '%');
             model.addAttribute("persons", persons);
         }
 
@@ -100,17 +99,20 @@ public class PersonController {
         return "personEdit";
     }
 
+    // TODO Переписать сохранение пользователя через сервис
+    // TODO Описать исключение для поля загрузки изображения
+    // TODO Добавить обработку ошибок на введенные данные в полях
+    // TODO Сделать, наконец, рефакторинг этого метода ::::)
+
+    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @PostMapping("{person}/save")
     public String personSave(
-            @RequestParam(name = "username") String username,
-            @RequestParam(name = "email") String email,
-            @RequestParam(name = "brigadeId", required = false) Brigade brigade,
+            @AuthenticationPrincipal Person auth_person,
             @RequestParam(name = "profile_pic") MultipartFile profile_pic,
             @RequestParam Map<String, String> form,
-            @PathVariable Person person) throws IOException {
-
-        person.setUsername(username);
-        person.setEmail(email);
+            @Valid Person person,
+            BindingResult bindingResult, // если не принимать этот параметр, то не происходит обработка исключений, которые попдают сюда
+            Model model) throws IOException {
 
         if (profile_pic != null &&
                 profile_pic.getOriginalFilename() != null &&
@@ -137,9 +139,9 @@ public class PersonController {
                 person.getRoles().add(Role.valueOf(key));
             }
         }
-        person.setBrigade(brigade);
+
         personRepo.save(person);
-        return "redirect:/person";
+        return "redirect:/person/{person}";
     }
 
 //    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")

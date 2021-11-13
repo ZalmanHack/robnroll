@@ -1,16 +1,17 @@
+<#include "security.ftl">
 <#import "avatar.ftl" as avatar>
 <#import "cardHeader.ftl" as cardHeader>
 <#import "item.ftl" as item>
 
-<#macro page path person categories activeCategory isEditable>
+<#macro page path person categories activeCategory isEditable filter_name>
 
     <div class="d-flex flex-row me-auto mt-4 mb-3">
         <div class="navbar-link d-flex flex-row me-auto">
-            <div class="d-flex align-items-center">
+            <div class="align-items-top">
                 <@avatar.page "${person.profile_pic!''}" "${person.initials}" "primary" "s-profile"/>
             </div>
             <div class="mx-5">
-                <#if isEditable == false>
+                <#if !isEditable>
                     <h3 class="text-dark">${person.getFull_name()}</h3>
                     <div><small class="text-muted card-text">Почта</small></div>
                     <div><span class="text-dark card-text">${person.email}</span></div>
@@ -21,24 +22,12 @@
                         <span class="text-dark card-text"><#if person.brigade??>${person.brigade.name}<#else>Бригада не выбрана</#if></span>
                     </div>
                 <#else >
-                    <form action="${path}" method="post" class="mx-auto">
-                        <#--                    -->
-                        <div class="mb-3">
-                            <label for="inputUsername" class="form-label">Логин</label>
-                            <input name="username"
-                                   type="text"
-                                   value="<#if person??>${person.username}</#if>"
-                                   class="form-control ${(usernameError??)?string("is-invalid","")}"
-                                   id="inputUsername"
-                                   aria-describedby="usernameHelp">
-                            <div id="usernameHelp" class="form-text">Возможно, мы никому не отдадим ваши данные :)
-                            </div>
-                            <#if usernameError??>
-                                <div class="invalid-feedback">
-                                    ${usernameError}
-                                </div>
-                            </#if>
-                        </div>
+
+
+
+
+
+                    <form action="${path}" method="post" class="mx-auto" enctype="multipart/form-data">
                         <#--                    -->
                         <div class="mb-3">
                             <label for="inputFirst_name" class="form-label">Имя</label>
@@ -46,7 +35,7 @@
                                    type="text"
                                    value="<#if person??>${person.first_name}</#if>"
                                    class="form-control ${(first_nameError??)?string("is-invalid","")}"
-                                   id="inputFirst_name">
+                                   id="inputFirst_name" ${(!isAdmin)?then("readonly","")}>
                             <#if first_nameError??>
                                 <div class="invalid-feedback">
                                     ${first_nameError}
@@ -61,13 +50,14 @@
                                    type="text"
                                    value="<#if person??>${person.last_name}</#if>"
                                    class="form-control ${(last_nameError??)?string("is-invalid","")}"
-                                   id="inputLast_name">
+                                   id="inputLast_name" ${(!isAdmin)?then("readonly","")}>
                             <#if last_nameError??>
                                 <div class="invalid-feedback">
                                     ${last_nameError}
                                 </div>
                             </#if>
                         </div>
+
                         <#--                    -->
                         <div class="mb-3">
                             <label for="inputEmail"
@@ -86,6 +76,25 @@
                                 </div>
                             </#if>
                         </div>
+
+                        <#--                    -->
+                        <div class="mb-3">
+                            <label for="inputUsername" class="form-label">Логин</label>
+                            <input name="username"
+                                   type="text"
+                                   value="<#if person??>${person.username}</#if>"
+                                   class="form-control ${(usernameError??)?string("is-invalid","")}"
+                                   id="inputUsername"
+                                   aria-describedby="usernameHelp">
+                            <div id="usernameHelp" class="form-text">Возможно, мы никому не отдадим ваши данные :)
+                            </div>
+                            <#if usernameError??>
+                                <div class="invalid-feedback">
+                                    ${usernameError}
+                                </div>
+                            </#if>
+                        </div>
+
                         <#--                    -->
                         <div class="mb-3">
                             <label for="inputPassword" class="form-label">Пароль</label>
@@ -123,17 +132,22 @@
                             </select>
                         </div>
                         <#--                        -->
+
+                        <div class="mb-3">
+                            <input type="file" name="profile_pic">
+                        </div>
+
                         <div class="d-flex flex-row-reverse mb-3">
                             <input type="hidden" value="${_csrf.token}" name="_csrf">
                             <button type="submit" class="btn btn-primary ms-3 px-3">Сохранить</button>
-                            <a class="btn btn-outline-primary ms-3 px-3" href="/logout">Отмена</a>
+                            <a class="btn btn-outline-primary ms-3 px-3" href="/person/${person.id}">Отмена</a>
                         </div>
                     </form>
                 </#if>
             </div>
         </div>
 
-        <#if !isEditable>
+        <#if !isEditable && (person.id == id || isAdmin)>
             <div>
                 <a class="navbar-link text-secondary" href="${person.id}/edit">Редактировать</a>
             </div>
@@ -152,7 +166,7 @@
         </div>
 
         <div class="card text-field dark ">
-            <@cardHeader.header "/person" categories activeCategory "Имя пользователя" ""/>
+            <@cardHeader.header "/person" categories activeCategory "Имя пользователя" filter_name/>
             <div class="card-body">
                 <#if persons??>
                     <#list persons as person>
@@ -160,6 +174,8 @@
                         <#if !person?is_last>
                             <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>
                         </#if>
+                    <#else>
+                        Нет бригады
                     </#list>
                 </#if>
             </div>
