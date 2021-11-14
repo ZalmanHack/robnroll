@@ -1,12 +1,10 @@
 package com.zalman.robnroll.contoller;
 
-import com.fasterxml.jackson.databind.util.ArrayIterator;
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import com.zalman.robnroll.domain.Brigade;
 import com.zalman.robnroll.domain.Person;
 import com.zalman.robnroll.domain.Role;
 import com.zalman.robnroll.repos.BrigadeRepo;
 import com.zalman.robnroll.repos.PersonRepo;
+import com.zalman.robnroll.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,10 +28,10 @@ public class PersonController {
     private PersonRepo personRepo;
 
     @Autowired
-    private BrigadeRepo brigadeRepo;
+    private PersonService personService;
 
-    @Value("${upload.path}")
-    private String upload_path;
+    @Autowired
+    private BrigadeRepo brigadeRepo;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
@@ -73,7 +70,7 @@ public class PersonController {
         model.addAttribute("activeCategory", "Бригада");
         model.addAttribute("categories", new String[] {"Бригада"});
         model.addAttribute("filter_name", filter_name);
-        return "person";
+        return "personShow";
     }
 
     @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
@@ -86,124 +83,59 @@ public class PersonController {
         model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
-
-        Iterable<Person> persons;
-        if(auth_person.getBrigade() != null) {
-            persons = personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + filter_name + '%');
-            model.addAttribute("persons", persons);
-        }
-
-        model.addAttribute("activeCategory", "Бригада");
-        model.addAttribute("categories", new String[] {"Бригада"});
-        model.addAttribute("filter_name", filter_name);
         return "personEdit";
     }
 
-    // TODO Переписать сохранение пользователя через сервис
-    // TODO Описать исключение для поля загрузки изображения
-    // TODO Добавить обработку ошибок на введенные данные в полях
-    // TODO Сделать, наконец, рефакторинг этого метода ::::)
 
     @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
-    @PostMapping("{person}/save")
+    @PostMapping(value = "{person}/save", consumes = "multipart/form-data")
     public String personSave(
             @AuthenticationPrincipal Person auth_person,
-            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
+            @RequestParam(name = "raw_profile_pic") MultipartFile raw_profile_pic,
             @RequestParam Map<String, String> form,
             @Valid Person person,
             BindingResult bindingResult, // если не принимать этот параметр, то не происходит обработка исключений, которые попдают сюда
             Model model) throws IOException {
 
-        if (profile_pic != null &&
-                profile_pic.getOriginalFilename() != null &&
-                !profile_pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(upload_path);
-            if(!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
+        model.addAttribute("person", person);
+        model.addAttribute("roles", Role.values());
+        model.addAttribute("brigades", brigadeRepo.findAll());
 
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
-            // загружаем файл
-            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
-            person.setProfile_pic(resultFileName);
+        if(bindingResult.hasErrors()) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errors);
+            return "personEdit";
         }
 
-        Set<String> roles = Arrays.stream(Role.values())
-                .map(Role::name)
-                .collect(Collectors.toSet());
-
-        person.getRoles().clear();
-        for (String key : form.keySet()) {
-            if (roles.contains(key)) {
-                person.getRoles().add(Role.valueOf(key));
-            }
+        if(person.getPassword_1() != null && !person.getPassword_1().equals(person.getPassword_2())) {
+            model.addAttribute("password_1Error", "Пароли не равны!");
+            return "personEdit";
         }
 
-        personRepo.save(person);
+        if(!personService.checkUsername(person)) {
+            model.addAttribute("usernameError", "Такой пользователь уже существует!");
+            return "personEdit";
+        }
+
+        if(auth_person.isAdmin()) {
+            Set<String> roles = Arrays.stream(Role.values())
+                    .map(Role::name)
+                    .collect(Collectors.toSet());
+
+            ArrayList<Role> checkedRoles = new ArrayList<>();
+            for (String key : form.keySet()) {
+                if (roles.contains(key)) {
+                    checkedRoles.add(Role.valueOf(key));
+                }
+            }
+            personService.update(person, raw_profile_pic, auth_person, checkedRoles);
+        } else {
+            personService.update(person, raw_profile_pic, auth_person);
+        }
+
         return "redirect:/person/{person}";
     }
 
-//    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
-//    @PostMapping("{person}/save")
-//    public String personSave(
-//            @AuthenticationPrincipal Person auth_person,
-////            @RequestParam(name = "profile_pic") MultipartFile profile_pic,
-//            @RequestParam Map<String, String> form,
-//            @Valid Person person,
-//            BindingResult bindingResult,
-//            Model model) throws IOException {
-//
-//        model.addAttribute("person", person);
-//        model.addAttribute("activeCategory", "Бригада");
-//        model.addAttribute("categories", new String[] {"Бригада"});
-//
-//        if(bindingResult.hasErrors()) {
-//            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
-//            model.mergeAttributes(errors);
-//            return "personEdit";
-//        }
-//
-//        if(person.getPassword() != null && !person.getPassword().equals(person.getPassword_2())) {
-//            model.addAttribute("passwordError", "Пароли не равны!");
-//            return "personEdit";
-//        }
-//
-//        if(person.getPassword_2().isEmpty()) {
-//            model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
-//            return "personEdit";
-//        }
-//
-//        // работа с авой
-////        if (profile_pic != null &&
-////                profile_pic.getOriginalFilename() != null &&
-////                !profile_pic.getOriginalFilename().isEmpty()) {
-////            File uploadDir = new File(upload_path);
-////            if(!uploadDir.exists()) {
-////                uploadDir.mkdir();
-////            }
-////
-////            String uuidFile = UUID.randomUUID().toString();
-////            String resultFileName = uuidFile + "." + profile_pic.getOriginalFilename();
-////            // загружаем файл
-////            profile_pic.transferTo(new File(upload_path + '/' + resultFileName));
-////            person.setProfile_pic(resultFileName);
-////        }
-//
-//        // Работа с ролями
-//        Set<String> roles = Arrays.stream(Role.values())
-//                .map(Role::name)
-//                .collect(Collectors.toSet());
-//
-//        person.getRoles().clear();
-//        for (String key : form.keySet()) {
-//            if (roles.contains(key)) {
-//                person.getRoles().add(Role.valueOf(key));
-//            }
-//        }
-//        personRepo.save(person);
-//        return "person";
-//    }
 
     @PostMapping("{person}/delete")
     public String deletePerson(@PathVariable Person person) {

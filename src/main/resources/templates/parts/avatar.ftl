@@ -3,7 +3,7 @@
         <#if profile_pic != "">
             <img class="avatar-circle" src="/img/${profile_pic}">
         <#else>
-            <span class="initials">${initials}</span>
+            <span class="initials"> <#if initials??>${initials}<#else>ГС</#if></span>
         </#if>
     </div>
 </#macro>

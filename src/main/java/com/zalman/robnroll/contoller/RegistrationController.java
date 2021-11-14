@@ -3,6 +3,7 @@ package com.zalman.robnroll.contoller;
 import com.zalman.robnroll.domain.Person;
 import com.zalman.robnroll.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +40,12 @@ public class RegistrationController {
             return "registration";
         }
 
-        if(person.getPassword_2().isEmpty()) {
+        if(person.getPassword() == null || person.getPassword().isEmpty()) {
+            model.addAttribute("passwordError", "Данное поле не должно быть пустым");
+            return "registration";
+        }
+
+        if(person.getPassword_2() == null || person.getPassword_2().isEmpty()) {
             model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
             return "registration";
         }

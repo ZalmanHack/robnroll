@@ -8,10 +8,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -36,15 +33,26 @@ public class Person implements UserDetails {
     @NotBlank(message = "Данное поле не должно быть пустым")
     private String last_name;
 
-    @NotBlank(message = "Данное поле не должно быть пустым")
+    // @NotBlank(message = "Данное поле не должно быть пустым")
     //@Min(value = 8, message = "Пароль должен содержать не менее 8 символов")
     private String password;
+
+    @Transient
+    private String password_1;
     @Transient
     private String password_2;
 
     private Boolean active;
     private String profile_pic;
     private String activationCode;
+
+    public String getPassword_1() {
+        return password_1;
+    }
+
+    public void setPassword_1(String password_2) {
+        this.password_1 = password_2;
+    }
 
     public String getPassword_2() {
         return password_2;
@@ -154,6 +162,9 @@ public class Person implements UserDetails {
     }
 
     public String getInitials() {
+        if(last_name.isEmpty() || first_name.isEmpty()) {
+            return "";
+        }
         return String.valueOf(Character.toString(last_name.charAt(0)) + Character.toString(first_name.charAt(0))).toUpperCase();
     }
 
