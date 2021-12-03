@@ -7,7 +7,8 @@
             <h2>Вход</h2>
         </div>
         <form action="/login" method="post">
-            <@authForm.login true/>
+            <@authForm.messages/>
+            <@authForm.login/>
             <div class="d-flex flex-row-reverse mb-3">
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 <button type="submit" class="btn btn-primary ms-3 px-3">Вход</button>

@@ -10,6 +10,7 @@
                                 <input type="hidden" value="${person.id}" name="id">
                                 <button type="submit" class="btn btn-primary ms-3 px-3">Сохранить</button>
                                 <a class="btn btn-outline-primary ms-3 px-3" href="/person/${person.id}">Отмена</a>
+                                <a class="btn btn-danger ms-3 px-3"  onclick="deletePerson()">Удалить</a>
                         </div>
                 </@profile.edit>
         </form>

@@ -41,19 +41,23 @@
         </#list>
     </div>
 
+    <div class="">
+        <canvas id="chartStat"></canvas>
+    </div>
+
     <div class="card text-field dark ">
-        <@cardHeader.header "/person" categories activeCategory "Имя пользователя" filter_name/>
-        <div class="card-body">
-            <#if persons??>
-                <#list persons as person>
-                    <@item.personItem "${person.id}" person false/>
-                    <#if !person?is_last>
-                        <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>
-                    </#if>
-                <#else>
-                    Нет бригады
-                </#list>
-            </#if>
+        <@cardHeader.header "/person" categories activeCategory "Почта пользователя" filter_name/>
+        <div class="card-body" id="card-body">
+<#--            <#if persons??>-->
+<#--                <#list persons as person>-->
+<#--                    <@item.personItem "${person.id}" person false/>-->
+<#--                    <#if !person?is_last>-->
+<#--                        <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>-->
+<#--                    </#if>-->
+<#--                <#else>-->
+<#--                    Список пуст-->
+<#--                </#list>-->
+<#--            </#if>-->
         </div>
     </div>
 
@@ -116,7 +120,7 @@
 
 
 
-                <!-- <@authForm.registration true/> -->
+                <!-- <@authForm.registration/> -->
 
 
 

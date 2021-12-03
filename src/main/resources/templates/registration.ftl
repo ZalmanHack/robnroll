@@ -7,7 +7,8 @@
             <h2>Регистрация</h2>
         </div>
         <form action="/registration" method="post">
-            <@authForm.registration true/>
+            <@authForm.messages/>
+            <@authForm.registration/>
             <div class="d-flex flex-row-reverse mb-3">
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 <button type="submit" class="btn btn-primary ms-3 px-3">Продолжить</button>

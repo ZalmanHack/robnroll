@@ -1,7 +1,7 @@
 <#import "avatar.ftl" as avatar>
 
 <#macro personItem link person edit>
-    <div class="d-flex flex-row me-auto">
+    <div class="d-flex flex-row me-auto" >
         <a class="navbar-link d-flex flex-row me-auto" href=${link}>
             <div class="d-flex align-items-center">
                 <@avatar.page "${person.profile_pic!''}" "${person.initials}" "primary" "s-list-item"/>
@@ -20,7 +20,7 @@
 </#macro>
 
 <#macro brigadeItem brigade link>
-    <div class="d-flex flex-row me-auto">
+    <div class="d-flex flex-row me-auto" >
         <a class="navbar-link d-flex flex-row me-auto" href="${link}">
             <div class="d-flex align-items-center">
                 <@avatar.page "" "${brigade.initials}" "danger" "s-list-item"/>

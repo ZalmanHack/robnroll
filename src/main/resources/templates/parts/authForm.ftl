@@ -17,11 +17,7 @@
     </#if>
 </#macro>
 
-<#macro login isMessages>
-    <#if isMessages>
-        <@messages/>
-    </#if>
-
+<#macro login>
     <div class="mb-3">
         <label for="inputUsername" class="form-label">Логин</label>
         <input name="username"
@@ -52,10 +48,7 @@
 </#macro>
 
 
-<#macro registration isMessages>
-    <#if isMessages>
-        <@messages/>
-    </#if>
+<#macro registration>
     <div class="mb-3">
         <label for="inputFirst_name" class="form-label">Имя</label>
         <input name="first_name"
@@ -101,7 +94,7 @@
         </#if>
     </div>
 
-    <@login false/>
+    <@login/>
 
     <div class="mb-3">
         <label for="inputPassword" class="form-label">Повторите пароль</label>

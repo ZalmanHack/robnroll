@@ -22,7 +22,8 @@
 
 
 
-    <div class="container-sm py-3" style="width: 800px;">
+    <div class="container py-3" style="width: 800px;">
+<#--        <input type="hidden" value="${_csrf.token}" name="_csrf">-->
         <#nested>
     </div>
 
@@ -36,6 +37,10 @@
             integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
             crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="/static/js/vanilla.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </body>
     </html>
 </#macro>

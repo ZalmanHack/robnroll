@@ -1,6 +1,7 @@
 package com.zalman.robnroll.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,16 +25,24 @@ public class Person implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
     @Email(message = "Введите корректный почтовый адрес")
+
+    @Length(min = 1, max = 50, message = "Максимальное количество символов 50")
     @NotBlank(message = "Данное поле не должно быть пустым")
     private String email;
+
+    @Length(min = 1, max = 50, message = "Максимальное количество символов 50")
     @NotBlank(message = "Данное поле не должно быть пустым")
     private String username;
+
+    @Length(min = 1, max = 20, message = "Максимальное количество символов 20   ")
     @NotBlank(message = "Данное поле не должно быть пустым")
     private String first_name;
+
+    @Length(min = 1, max = 20, message = "Максимальное количество символов 20")
     @NotBlank(message = "Данное поле не должно быть пустым")
     private String last_name;
 
-    // @NotBlank(message = "Данное поле не должно быть пустым")
+    //@NotBlank(message = "Данное поле не должно быть пустым")
     //@Min(value = 8, message = "Пароль должен содержать не менее 8 символов")
     private String password;
 
@@ -204,5 +213,26 @@ public class Person implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", brigade=" + brigade +
+                ", roles=" + roles +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", password='" + password + '\'' +
+                ", password_1='" + password_1 + '\'' +
+                ", password_2='" + password_2 + '\'' +
+                ", active=" + active +
+                ", profile_pic='" + profile_pic + '\'' +
+                ", activationCode='" + activationCode + '\'' +
+                '}';
     }
 }

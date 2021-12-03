@@ -1,12 +1,18 @@
 package com.zalman.robnroll.contoller;
 
+import com.zalman.robnroll.domain.Event;
 import com.zalman.robnroll.domain.Person;
+import com.zalman.robnroll.domain.Register;
 import com.zalman.robnroll.domain.Role;
 import com.zalman.robnroll.repos.BrigadeRepo;
 import com.zalman.robnroll.repos.PersonRepo;
 import com.zalman.robnroll.service.PersonService;
+import com.zalman.robnroll.service.RegisterService;
+import com.zalman.robnroll.util.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,12 +37,21 @@ public class PersonController {
     @Autowired
     private PersonService personService;
 
+
+    @Autowired
+    private RegisterService registerService;
+
+
     @Autowired
     private BrigadeRepo brigadeRepo;
+
+    @Autowired
+    private PersonValidator personValidator;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public String personList(@RequestParam(name = "activeCategory", required = false, defaultValue = "Все пользователи") String activeCategory,
+                             @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
                              Model model) {
         Iterable<Person> persons;
         String[] categories = new String[] {"Все пользователи", "В бригаде", "Без бригады"};
@@ -52,6 +68,9 @@ public class PersonController {
     }
 
     //@PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || " +
+            "#auth_person.id.equals(#person.id) || " +
+            "(#auth_person.brigade != null && #person.brigade != null && #auth_person.brigade.id.equals(#person.brigade.id))")
     @GetMapping("{person}")
     public String personShow (
             @AuthenticationPrincipal Person auth_person,
@@ -66,6 +85,15 @@ public class PersonController {
         if(person.getBrigade() != null) {
             persons = personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + filter_name + '%');
         }
+
+//        Register register = new Register();
+//        register.setDateTime(LocalDateTime.now());
+//        register.setEvent(Event.MESSAGE);
+//        register.setPerson(person);
+//        register.setMessage("Создать робота");
+//        registerService.addRecord(register);
+
+
         model.addAttribute("persons", persons);
         model.addAttribute("activeCategory", "Бригада");
         model.addAttribute("categories", new String[] {"Бригада"});
@@ -78,14 +106,12 @@ public class PersonController {
     public String personEdit(
             @AuthenticationPrincipal Person auth_person,
             @PathVariable Person person,
-            @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
             Model model) {
         model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
         return "personEdit";
     }
-
 
     @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
     @PostMapping(value = "{person}/save", consumes = "multipart/form-data")
@@ -97,6 +123,7 @@ public class PersonController {
             BindingResult bindingResult, // если не принимать этот параметр, то не происходит обработка исключений, которые попдают сюда
             Model model) throws IOException {
 
+        personValidator.validate(person, bindingResult);
         model.addAttribute("person", person);
         model.addAttribute("roles", Role.values());
         model.addAttribute("brigades", brigadeRepo.findAll());
@@ -107,42 +134,33 @@ public class PersonController {
             return "personEdit";
         }
 
-        if(person.getPassword_1() != null && !person.getPassword_1().equals(person.getPassword_2())) {
-            model.addAttribute("password_1Error", "Пароли не равны!");
-            return "personEdit";
-        }
-
-        if(!personService.checkUsername(person)) {
-            model.addAttribute("usernameError", "Такой пользователь уже существует!");
-            return "personEdit";
-        }
-
+        ArrayList<Role> checkedRoles = new ArrayList<>();
         if(auth_person.isAdmin()) {
-            Set<String> roles = Arrays.stream(Role.values())
-                    .map(Role::name)
-                    .collect(Collectors.toSet());
-
-            ArrayList<Role> checkedRoles = new ArrayList<>();
+            Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
             for (String key : form.keySet()) {
                 if (roles.contains(key)) {
                     checkedRoles.add(Role.valueOf(key));
                 }
             }
-            personService.update(person, raw_profile_pic, auth_person, checkedRoles);
-        } else {
-            personService.update(person, raw_profile_pic, auth_person);
         }
-
+        personService.update(person, raw_profile_pic, auth_person, checkedRoles);
         return "redirect:/person/{person}";
     }
 
-
-    @PostMapping("{person}/delete")
-    public String deletePerson(@PathVariable Person person) {
-        if(person != null && personRepo.existsById(person.getId())) {
-            person.getRoles().clear();
-            personRepo.delete(person);
-        }
-        return "redirect:/person";
+    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
+    @DeleteMapping(value = "{person}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deletePerson(@AuthenticationPrincipal Person auth_person, @PathVariable Person person) {
+        personService.delete(person);
+        return ResponseEntity.ok().build();
     }
+
+
+
+//    @PreAuthorize("#auth_person.id.equals(#person.id) || hasAuthority('ADMIN')")
+//    @PostMapping(value = "{person}/statistic", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<String> getPersonStat(@AuthenticationPrincipal Person auth_person, @PathVariable Person person) {
+//        personService.getStatistic(person);
+//        return ResponseEntity.ok().build();
+//    }
+
 }

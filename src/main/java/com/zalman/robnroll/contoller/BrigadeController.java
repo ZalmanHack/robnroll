@@ -6,6 +6,7 @@ import com.zalman.robnroll.domain.Role;
 import com.zalman.robnroll.repos.BrigadeRepo;
 import com.zalman.robnroll.repos.PersonRepo;
 import com.zalman.robnroll.service.BrigadeService;
+import com.zalman.robnroll.util.BrigadeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,12 +35,14 @@ public class BrigadeController {
     @Autowired
     BrigadeService brigadeService;
 
+    @Autowired
+    BrigadeValidator brigadeValidator;
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public String main(@RequestParam(name = "activeCategory", required = false, defaultValue = "Все бригады") String activeCategory,
                        @RequestParam(name = "filter_name", required = false, defaultValue = "") String filter_name,
                        Model model) {
-
 
         List<String> categories = new ArrayList<>();
         categories.add("Все бригады");
@@ -67,7 +70,6 @@ public class BrigadeController {
         return "comingSoon";
     }
 
-    //TODO Падает при работае с пустой бригадой
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
@@ -79,6 +81,8 @@ public class BrigadeController {
         model.addAttribute("categories", new String[]{"Все бригады"});
         model.addAttribute("filter_name", "");
 
+        brigadeValidator.validate(brigade, bindingResult);
+
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
@@ -86,11 +90,9 @@ public class BrigadeController {
             return "brigadeList";
         }
 
-        if (!brigadeService.addBrigade(brigade)) {
-            model.addAttribute("nameError", "Такая бригада уже существует!");
-        }
-        model.addAttribute("brigades", brigadeRepo.findAll());
+        brigadeService.addBrigade(brigade);
 
+        model.addAttribute("brigades", brigadeRepo.findAll());
         return "brigadeList";
     }
 

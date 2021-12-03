@@ -2,6 +2,7 @@ package com.zalman.robnroll.contoller;
 
 import com.zalman.robnroll.domain.Person;
 import com.zalman.robnroll.service.PersonService;
+import com.zalman.robnroll.util.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,9 @@ public class RegistrationController {
     @Autowired
     private PersonService personService;
 
+    @Autowired
+    private PersonValidator personValidator;
+
     @GetMapping("/registration")
     public String registration() {
         return "registration";
@@ -28,33 +32,13 @@ public class RegistrationController {
     public String addPerson(@Valid Person person,
                             BindingResult bindingResult,
                             Model model) {
-
+        personValidator.validate(person, bindingResult);
         if(bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
             return "registration";
         }
-
-        if(person.getPassword() != null && !person.getPassword().equals(person.getPassword_2())) {
-            model.addAttribute("passwordError", "Пароли не равны!");
-            return "registration";
-        }
-
-        if(person.getPassword() == null || person.getPassword().isEmpty()) {
-            model.addAttribute("passwordError", "Данное поле не должно быть пустым");
-            return "registration";
-        }
-
-        if(person.getPassword_2() == null || person.getPassword_2().isEmpty()) {
-            model.addAttribute("password_2Error", "Данное поле не должно быть пустым");
-            return "registration";
-        }
-
-        if(!personService.addPerson(person)) {
-            model.addAttribute("usernameError", "Такой пользователь уже существует!");
-            return "registration";
-        }
-
+        personService.addPerson(person);
         model.addAttribute("info_message", String.format("%s, Вам на почту %s было отправлено письмо с ключём активации!", person.getUsername(), person.getEmail()));
         return "login";
     }

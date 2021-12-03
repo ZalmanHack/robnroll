@@ -11,15 +11,7 @@ public class BrigadeService {
     @Autowired
     BrigadeRepo brigadeRepo;
 
-    public boolean addBrigade(Brigade brigade) {
-        if (brigade == null) {
-            return false;
-        }
-        Brigade brigadeFromDB = brigadeRepo.findByName(brigade.getName());
-        if (brigadeFromDB != null) {
-            return false;
-        }
+    public void addBrigade(Brigade brigade) {
         brigadeRepo.save(brigade);
-        return true;
     }
 }

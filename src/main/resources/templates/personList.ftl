@@ -4,7 +4,7 @@
 
 <@common.page>
     <div class="card text-field dark ">
-        <@cardHeader.header "/person" categories activeCategory "Имя пользователя" ""/>
+        <@cardHeader.header "/person" categories activeCategory "Поиск еще не работает" ""/>
         <div class="card-body">
             <#list persons as person>
                 <@item.personItem "person/${person.id}" person true/>
@@ -12,7 +12,7 @@
                     <hr style="height: 1px; border: 0 solid  rgba(100,100,100,100.125); border-top-width: 1px; margin-left: 65px;"/>
                 </#if>
             <#else>
-                Нет пользователей
+                Список пуст
             </#list>
         </div>
     </div>

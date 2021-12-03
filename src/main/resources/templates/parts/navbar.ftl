@@ -15,9 +15,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/">Главная</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/person/${id}">Профиль</a>
-                    </li>
                     <#if isAdmin>
 <#--                        <li><hr class="me-5"></li>-->
                         <li class="nav-item">
@@ -31,7 +28,7 @@
             </ul>
 
 
-            <a class="navbar-link pe-2 d-inline-block" href="/profile">
+            <a class="navbar-link pe-2 d-inline-block" href="/person/${id}">
                 <div class="navbar-text">${first_name}</div>
             </a>
             <a class="navbar-link d-inline-block" href="/person/${id}">

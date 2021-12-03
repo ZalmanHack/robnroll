@@ -1,5 +1,6 @@
 package com.zalman.robnroll.service;
 
+import com.zalman.robnroll.domain.Brigade;
 import com.zalman.robnroll.domain.Person;
 import com.zalman.robnroll.domain.Role;
 import com.zalman.robnroll.repos.PersonRepo;
@@ -39,12 +40,13 @@ public class PersonService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String personName) throws UsernameNotFoundException {
-        return personRepo.findByUsername(personName);
+        Optional<Person> person = personRepo.findFirstByUsername(personName);
+        return person.orElse(null);
     }
 
     public boolean addPerson(Person person) {
-        Person personFromDB = personRepo.findByUsername(person.getUsername());
-        if (personFromDB != null) {
+        Optional<Person> personFromDB = personRepo.findFirstByUsername(person.getUsername());
+        if (personFromDB.isPresent()) {
             return false;
         }
         person.setActive(false);
@@ -61,7 +63,7 @@ public class PersonService implements UserDetailsService {
                             "<body>\n" +
                             "Привет, %s!\n" +
                             "Добро пожаловать в Rob&Rolle!\n" +
-                            "Пожалуйста, для активации аккаунта, перейдите по <a href=\"http://%s/activate/%s\">ссылке</a>." +
+                            "Пожалуйста, для активации аккаунта, перейдите по <a href=\"https://%s/activate/%s\">ссылке</a>." +
                             "</body>\n" +
                             "</html>",
                     person.getUsername(), hostName, person.getActivationCode());
@@ -79,10 +81,6 @@ public class PersonService implements UserDetailsService {
         person.setActivationCode(null);
         personRepo.save(person);
         return true;
-    }
-
-    public void update(Person person, MultipartFile raw_profile_pic, Person authPerson) throws IOException {
-        update(person, raw_profile_pic, authPerson, null);
     }
 
     public void update(final Person person, MultipartFile raw_profile_pic, final Person authPerson, @Nullable Iterable<Role> checkedRoles) throws IOException {
@@ -124,8 +122,21 @@ public class PersonService implements UserDetailsService {
         personRepo.save(person);
     }
 
-    public boolean checkUsername(Person person) {
-        Person personFromDB = personRepo.findByUsername(person.getUsername());
-        return personFromDB == null || personFromDB.getId().equals(person.getId());
+    public void delete(Person person) {
+        person.getRoles().clear();
+        personRepo.delete(person);
+    }
+
+    public Iterable<Person> brigadePersons(Person person) {
+        return brigadePersons(person, "");
+    }
+
+    public Iterable<Person> brigadePersons(Person person, String email) {
+        return personRepo.findByBrigadeAndEmailLike(person.getBrigade(), '%' + email + '%');
+    }
+
+
+    public Iterable<Person> allPersons() {
+        return personRepo.findAll();
     }
 }
